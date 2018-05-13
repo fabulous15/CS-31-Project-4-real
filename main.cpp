@@ -70,7 +70,7 @@ int positionOfMin(const string a[], int n){
 int moveToEnd(string a[], int n, int pos){
     int i;
     string tem = a[pos];
-    for (i = pos; i < n-1; i++){
+    for (i = pos; i < n - 1; i++){
         a[i] = a[i+1];
     }
     a[n-1] = tem;
@@ -80,7 +80,7 @@ int moveToEnd(string a[], int n, int pos){
 int moveToBeginning(string a[], int n, int pos){
     int i;
     string tem = a[pos];
-    for (i = 0; i < pos - 1; i++){
+    for (i = 0; i < pos; i++){
         a[pos - i] = a[pos - i - 1];
     }
     a[0] = tem;
@@ -100,22 +100,19 @@ int findDifference(const string a1[], int n1, const string a2[], int n2){
 }
 
 int eliminateDups(string a[], int n){
-    string b[n];
     int i;
     int j = 0;
-    int k;
-    b[0] = a[0];
     for (i = 1; i < n; i++){
         if (a[i] != a[i-1]){
             j++;
-            b[j] = a[i];
         }
-    }
-    for (k = 0; k <= j; k++){
-        a[k] = b[k];
+        else{
+            moveToEnd(a, n, i);
+        }
     }
     return j++;
 }
+
 bool subsequence(const string a1[], int n1, const string a2[], int n2){
     string big[2*n1];
     int i;
@@ -179,15 +176,39 @@ int makeMerger(const string a1[], int n1, const string a2[], int n2, string resu
     }
 }
 
+int separate(string a[], int n, string separator){
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    while (i < n){
+        if (a[i] < separator){
+            j++;
+            k++;
+            moveToBeginning(a, n, i);
+            i++;
+        }
+        if (a[i] > separator){
+            moveToEnd(a, n, i);
+            k++;
+            if (k > n){
+                break;
+            }
+        }
+        else{
+            i++;
+            k++;
+        }
+    }
+    return j;
+}
+
 int main()
 {
     int i;
-    string x[5] = { "banner", "rhodes", "rogers", "stark", "tchalla" };
-    string y[4] = { "parker", "rogers", "rogers", "thor" };
-    string z[20];
-    int n = makeMerger(x, 5, y, 4, z, 20);
-    cout << n << endl;
+    string g[4] = { "romanoff", "rogers", "thor", "banner" };
+    int s = separate(g, 4, "rogers");
+    cout << s << endl;
     for (i = 0; i < 9; i++){
-        cout << z[i] << " ";
+        cout << g[i] << " ";
     }
 }
