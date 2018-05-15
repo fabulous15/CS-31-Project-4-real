@@ -12,25 +12,35 @@ using namespace std;
 int tally(const string a[], int n, string target){
     int i;
     int j = 0;
-    for (i = 0; i < n; i++)
-        if (a[i] == target){
-            j++;
-        }
-    return j;
+    if (n < 0){
+        return -1;
+    }
+    else{
+        for (i = 0; i < n; i++)
+            if (a[i] == target){
+                j++;
+            }
+        return j;
+    }
 }
 
 int findMatch(const string a[], int n, string target){
     int i;
-    if (tally(a, n, target) == 0){
+    if (n < 0){
         return -1;
     }
     else{
-        for (i = 0; i < n; i++){
-            if (a[i] == target){
-                break;
-            }
+        if (tally(a, n, target) == 0){
+            return -1;
         }
-        return i;
+        else{
+            for (i = 0; i < n; i++){
+                if (a[i] == target){
+                    break;
+                }
+            }
+            return i;
+        }
     }
 }
 
@@ -69,137 +79,158 @@ int positionOfMin(const string a[], int n){
 
 int moveToEnd(string a[], int n, int pos){
     int i;
-    string tem = a[pos];
-    for (i = pos; i < n - 1; i++){
-        a[i] = a[i+1];
+    if (n < 0){
+        return -1;
     }
-    a[n-1] = tem;
-    return pos;
+    else{
+        string tem = a[pos];
+        for (i = pos; i < n - 1; i++){
+            a[i] = a[i+1];
+        }
+        a[n-1] = tem;
+        return pos;
+    }
 }
 
 int moveToBeginning(string a[], int n, int pos){
     int i;
-    string tem = a[pos];
-    for (i = 0; i < pos; i++){
-        a[pos - i] = a[pos - i - 1];
+    if (n < 0){
+        return -1;
     }
-    a[0] = tem;
-    return pos;
+    else{
+        string tem = a[pos];
+        for (i = 0; i < pos; i++){
+            a[pos - i] = a[pos - i - 1];
+        }
+        a[0] = tem;
+        return pos;
+    }
 }
 
 int findDifference(const string a1[], int n1, const string a2[], int n2){
     int i;
     int j = 0;
-    for (i = 0; i < n1 && i < n2; i++){
-        if (a1[i] == a2[i]){
-            j++;
-        }
-        else break;
+    if (n1 < 0 || n2 < 0){
+        return -1;
     }
-    return j;
+    else{
+        for (i = 0; i < n1 && i < n2; i++){
+            if (a1[i] == a2[i]){
+                j++;
+            }
+            else break;
+        }
+        return j;
+    }
 }
 
 int eliminateDups(string a[], int n){
-    int i;
-    int j = 0;
-    for (i = 1; i < n; i++){
-        if (a[i] != a[i-1]){
-            j++;
-        }
-        else{
-            moveToEnd(a, n, i);
-        }
+    int i = 1;
+    int j = 1;
+    int l = 0;
+    int k;
+    if (n < 0){
+        return -1;
     }
-    return j++;
+    else if (n == 0){
+        return 0;
+    }
+    else{
+        for (i = 1; i < n; i++){
+            if (a[i] != a[i-1]){
+                j++;
+            }
+            else{
+                moveToBeginning(a, n, i);
+                l++;
+            }
+        }
+        for (k = 0; k < j; k++){
+            a[k] = a[k+l];
+        }
+        return j;
+    }
 }
 
 bool subsequence(const string a1[], int n1, const string a2[], int n2){
-    string big[2*n1];
     int i;
     int j;
-    int k;
-    int l = 0;
-    for (i = 0; i < n1; i++){
-        big[i] = a1[i];
-    }
-    if (n1 < n2){
-        return false;
-    }
-    else{
-        for (j = 0; j < n2; j++){
-            if (findMatch(big, n1 - l, a2[j]) == -1){
+    int k = 0;
+    for (i = 0; i < n2; i++){
+        for (j = k; j < n1; j++){
+            if (a2[i] == a1[j]){
+                k = j + 1;
                 break;
             }
-            else{
-                for (k = 0; k <= findMatch(big, n1, a2[j]); k++){
-                    moveToEnd(big, n1, k);
-                    l = l + findMatch(big, n1, a2[j]) + 1;
-                }
-            }
         }
-        if (j == n2 - 1){
-            return true;
-        }
-        else{
+        if (j == n1){
             return false;
         }
     }
+    return true;
 }
 
 int makeMerger(const string a1[], int n1, const string a2[], int n2, string result[], int max){
     int i;
     int j;
-    string tem;
-    if (n1 + n2 > max){
+    if (n1 < 0 || n2 < 0){
         return -1;
     }
     else{
-        for (i = 0; i < n1; i++){
-            result[i] = a1[i];
+        string tem;
+        if (n1 + n2 > max){
+            return -1;
         }
-        for (i = n1; i < n1 + n2; i++){
-            result[i] = a2[i-n1];
-        }
-        for (i = 1; i < n1 +n2; i++){
-            for (j = 0; j < i; j++){
-                if (result[i-j] >= result[i-j-1]){
-                    break;
-                }
-                else{
-                    tem = result[i-j];
-                    result[i-j] = result[i-j-1];
-                    result[i-j-1] = tem;
+        else{
+            for (i = 0; i < n1; i++){
+                result[i] = a1[i];
+            }
+            for (i = n1; i < n1 + n2; i++){
+                result[i] = a2[i-n1];
+            }
+            for (i = 1; i < n1 +n2; i++){
+                for (j = 0; j < i; j++){
+                    if (result[i-j] >= result[i-j-1]){
+                        break;
+                    }
+                    else{
+                        tem = result[i-j];
+                        result[i-j] = result[i-j-1];
+                        result[i-j-1] = tem;
+                    }
                 }
             }
+            return n1 + n2;
         }
-        return n1 + n2;
     }
 }
 
 int separate(string a[], int n, string separator){
     int i = 0;
     int j = 0;
-    int k = 0;
-    while (i < n){
-        if (a[i] < separator){
-            j++;
-            k++;
-            moveToBeginning(a, n, i);
-            i++;
-        }
-        if (a[i] > separator){
-            moveToEnd(a, n, i);
-            k++;
-            if (k > n){
-                break;
+    int k;
+    if (n < 0){
+        return -1;
+    }
+    else if (n == 0){
+        return 0;
+    }
+    else{
+        for (k = 0; k < n; k++){
+            if (a[i] < separator){
+                moveToBeginning(a, n, i);
+                j++;
+                i++;
+            }
+            else if (a[i] > separator){
+                moveToEnd(a, n, i);
+            }
+            else{
+                i++;
             }
         }
-        else{
-            i++;
-            k++;
-        }
+        return j;
     }
-    return j;
 }
 
 int main()
